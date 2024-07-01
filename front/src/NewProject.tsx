@@ -13,31 +13,31 @@ import {
 } from '@chakra-ui/react'
 import React from 'react'
 import { NewProjectProps, ProjectType, Projects } from './types'
+import { CreateProjectDocument } from './gql/graphql'
+import { useMutation } from '@apollo/client'
 
-export const NewProject: React.FC<NewProjectProps> = ({ isOpen, onClose, setProjects }) => {
+export const NewProject: React.FC<NewProjectProps> = ({ isOpen, onClose, addProject}) => {
 	const [name, setName] = React.useState('')
 	const [description, setDescription] = React.useState('')
-
+	const [createProject] = useMutation(CreateProjectDocument)
+	
 	const submit = async () => {
 		console.log('TEST')
-		// TODO: implement the submit of the new project
-
-		// You can use the setProjects function to add the new project to the list of projects
-
-		// You can use the onClose function to close the modal
-
-		setProjects((prevProjects) => {
-			return [
-				...prevProjects,
-				{
-					id: prevProjects.length + 1,
+		// Make addProjectMutation and get id from it
+		try{
+			const res = await createProject({
+				variables: {
 					name: name,
 					description: description,
-					totalTimeSpent: 0,
-					tasks: [],
 				},
-			]
-		})
+			})
+			console.log(res)
+			if(res.data?.createProject){
+				addProject({...res.data?.createProject, todoCount: 0, inProgressCount: 0, doneCount: 0, tasks: []})
+			}
+		} catch (err) {
+			console.log(err)
+		}
     onClose()
 	}
 

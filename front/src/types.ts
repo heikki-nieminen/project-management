@@ -10,11 +10,10 @@ export type Task = {
 }
 
 export type ProjectType = {
-  id: number
+  id: string
   name: string
   description: string
-  totalTimeSpent: number
-  tasks: Task[]
+  created_at: string
 }
 
 export type ProjectProps = {
@@ -27,12 +26,12 @@ export type TaskProps = {
   onClose: () => void,
 }
 
-type SetProjects = React.Dispatch<React.SetStateAction<ProjectType[]>>;
+type SetProjects = React.Dispatch<React.SetStateAction<Project[]>>;
 
 export type NewProjectProps = {
   isOpen: boolean,
   onClose: () => void,
-  setProjects: SetProjects
+  addProject: (project: Project) => void
 }
 
 export type LoginModalProps = {

@@ -19,6 +19,7 @@ const documents = {
     "\n\tquery projectTasks($projectId: String!) {\n\t\tprojectTasks(id: $projectId) {\n\t\t\tid\n\t\t\tname\n\t\t\tdescription\n\t\t\ttasks {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tdescription\n\t\t\t\tstate\n\t\t\t\ttime_spent\n\t\t\t\tproject_id\n\t\t\t\torder\n\t\t\t}\n\t\t}\n\t}\n": types.ProjectTasksDocument,
     "\n  mutation CreateTask($name: String!, $description: String, $project_id: String!) {\n    createTask(name: $name, description: $description, project_id: $project_id) {\n      id\n      name\n      description\n      state\n      time_spent\n      project_id\n    }\n  }\n": types.CreateTaskDocument,
     "\n\tmutation UpdateTask($updateTaskId: String!, $state: String, $description: String, $name: String, $order: Int) {\n  updateTask(id: $updateTaskId, state: $state, description: $description, name: $name, order: $order) {\n    id\n    name\n    description\n    state\n    project_id\n\t\torder\n  }\n}\n": types.UpdateTaskDocument,
+    "\n\tmutation CreateProject($name: String!, $description: String) {\n\t\tcreateProject(name: $name, description: $description) {\n\t\t\tid\n\t\t\tname\n\t\t\tdescription\n\t\t\tcreated_at\n\t\t\tedited_at\n\t\t\tuser_id\n\t\t}\n\t}\n": types.CreateProjectDocument,
 };
 
 /**
@@ -59,6 +60,10 @@ export function graphql(source: "\n  mutation CreateTask($name: String!, $descri
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n\tmutation UpdateTask($updateTaskId: String!, $state: String, $description: String, $name: String, $order: Int) {\n  updateTask(id: $updateTaskId, state: $state, description: $description, name: $name, order: $order) {\n    id\n    name\n    description\n    state\n    project_id\n\t\torder\n  }\n}\n"): (typeof documents)["\n\tmutation UpdateTask($updateTaskId: String!, $state: String, $description: String, $name: String, $order: Int) {\n  updateTask(id: $updateTaskId, state: $state, description: $description, name: $name, order: $order) {\n    id\n    name\n    description\n    state\n    project_id\n\t\torder\n  }\n}\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n\tmutation CreateProject($name: String!, $description: String) {\n\t\tcreateProject(name: $name, description: $description) {\n\t\t\tid\n\t\t\tname\n\t\t\tdescription\n\t\t\tcreated_at\n\t\t\tedited_at\n\t\t\tuser_id\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation CreateProject($name: String!, $description: String) {\n\t\tcreateProject(name: $name, description: $description) {\n\t\t\tid\n\t\t\tname\n\t\t\tdescription\n\t\t\tcreated_at\n\t\t\tedited_at\n\t\t\tuser_id\n\t\t}\n\t}\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

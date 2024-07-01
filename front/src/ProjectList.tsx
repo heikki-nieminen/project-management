@@ -29,7 +29,7 @@ import { Projects } from './types'
 import { ProjectView } from './ProjectView'
 import { NewProject } from './NewProject'
 import { useMutation, useQuery } from '@apollo/client'
-import { GetUserProjectsDocument, GetUserProjectsQuery } from './gql/graphql'
+import { GetUserProjectsDocument, GetUserProjectsQuery, Project } from './gql/graphql'
 import { color } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
@@ -42,16 +42,26 @@ export const ProjectList = () => {
 	//const [projectsList, setProjectsList] = useState<Project[]>([]) // Fix: Specify the type as Project[]
 
 	const { loading, error, data, refetch } = useQuery<GetUserProjectsQuery>(GetUserProjectsDocument) // Fix: re-fetch when landing
-	const projects = data?.getUserProjects || []
+	const [projects, setProjects] = React.useState(data && data.getUserProjects ? data.getUserProjects : [])
 
 	const calculatePercentage = (todoCount: number = 0, inProgressCount: number = 0, doneCount: number = 0): number => {
 		const total = todoCount + inProgressCount + doneCount
 		return Math.round((doneCount / total) * 1000) / 10 || 0
 	}
 
+	const addProject = (project: Project) => {
+		setProjects([...projects, project])
+	}
+
 	useEffect(() => {
 		refetch()
 	}, [refetch])
+
+	useEffect(() => {
+		if (data && data.getUserProjects) {
+			setProjects(data.getUserProjects)
+		}
+	}, [data])
 
 	console.log('data:', projects)
 	console.log('loading:', loading)
@@ -141,7 +151,7 @@ export const ProjectList = () => {
 					Add new project
 				</Button>
 			</Container>
-			{/* <NewProject isOpen={isOpen} onClose={onClose} setProjects={setProjects} /> */}
+			<NewProject isOpen={isOpen} onClose={onClose} addProject={addProject} />
 		</>
 	)
 }

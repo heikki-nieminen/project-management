@@ -71,3 +71,16 @@ export const UPDATE_TASK = gql`
   }
 }
 `
+
+export const CREATE_PROJECT = gql`
+	mutation CreateProject($name: String!, $description: String) {
+		createProject(name: $name, description: $description) {
+			id
+			name
+			description
+			created_at
+			edited_at
+			user_id
+		}
+	}
+`
