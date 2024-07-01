@@ -4,6 +4,7 @@ import { Nav } from './Nav'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ProjectView } from './ProjectView'
+import "./App.css"
 
 export const App = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false)

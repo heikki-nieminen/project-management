@@ -7,10 +7,15 @@
 
 import {
 	Accordion,
+	AccordionButton,
+	AccordionIcon,
+	AccordionItem,
+	AccordionPanel,
 	Box,
 	Button,
 	Center,
 	Container,
+	Flex,
 	Grid,
 	GridItem,
 	Heading,
@@ -21,12 +26,20 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	SimpleGrid,
+	Spacer,
 	Text,
 	useColorModeValue,
 } from '@chakra-ui/react'
 import React from 'react'
 import { ProjectProps } from './types'
-import { Project, ProjectTasksDocument, ProjectTasksQuery, Task, UpdateTaskDocument } from './gql/graphql'
+import {
+	CreateTaskDocument,
+	Project,
+	ProjectTasksDocument,
+	ProjectTasksQuery,
+	Task,
+	UpdateTaskDocument,
+} from './gql/graphql'
 import { useMutation, useQuery } from '@apollo/client'
 import { useParams } from 'react-router-dom'
 import { DragDropContext, Draggable, DropResult, Droppable } from 'react-beautiful-dnd'
@@ -75,11 +88,12 @@ export const ProjectView: React.FC<ProjectProps> = () => {
 	const [newTaskOpen, setNewTaskOpen] = React.useState(false)
 
 	const [updateTask] = useMutation(UpdateTaskDocument)
+	const [createTask] = useMutation(CreateTaskDocument)
 
 	const bg = useColorModeValue('brand.50', 'brand.200')
 
 	React.useEffect(() => {
-		if(data && !dataLoaded) {
+		if (data && !dataLoaded) {
 			setTodo(todoTasks)
 			setInProgress(inProgressTasks)
 			setDone(doneTasks)
@@ -98,12 +112,24 @@ export const ProjectView: React.FC<ProjectProps> = () => {
 	}
 
 	const addTask = (task: Task) => {
-		setTodo([...todo, task])
+		try {
+			/* createTask({
+				variables: {
+					name: task.name,
+					description: task.description,
+					project_id: task.project_id,
+				},
+			})
+			console.log("Added task:", task) */
+			setTodo([...todo, task])
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	const updateTaskQuery = async (task: Task, newState: string, order: number) => {
 		try {
-			 await updateTask({
+			await updateTask({
 				variables: {
 					updateTaskId: task.id,
 					name: task.name,
@@ -122,6 +148,8 @@ export const ProjectView: React.FC<ProjectProps> = () => {
 		if (!result.destination) {
 			return
 		}
+
+		document.body.style.cursor = 'default!important'
 
 		const { source, destination, draggableId } = result
 
@@ -292,27 +320,40 @@ export const SingleTask: React.FC<TaskWithIndex> = ({ id = '0', name, descriptio
 	const bgDragging = useColorModeValue('brand.200', 'brand.100')
 	const hoverBg = useColorModeValue('brand.200', 'brand.100')
 
+	const onClickHandler = () => {
+		console.log('clicked')
+	}
+
+	// TODO: fix dragging from AccordionButton
 	return (
 		<Draggable key={id} draggableId={id} index={index}>
 			{(provided, snapshot) => (
 				<Box
 					bg={snapshot.isDragging ? bgDragging : bg}
 					_hover={{ bg: hoverBg }}
-					cursor={'grab'}
-					draggable
+					style={{ cursor: !snapshot.isDragging ? 'pointer' : 'grabbing' }}
+					/* draggable */
 					m={2}
 					p={2}
 					ref={provided.innerRef}
 					{...provided.draggableProps}
-					{...provided.dragHandleProps}
 				>
 					<Accordion allowToggle>
-						<Heading as={'h4'} size={'md'}>
-							{name}
-						</Heading>
-						<Text>{description}</Text>
-						<br />
-						<Text>{time_spent}</Text>
+						<AccordionItem border={'none'} draggable onClick={onClickHandler} {...provided.dragHandleProps}>
+							<AccordionButton>
+								<Heading as={'h4'} size={'md'}>
+									{name}
+								</Heading>
+								<Spacer />
+								<AccordionIcon />
+							</AccordionButton>
+
+							<AccordionPanel>
+								<Text>{description}</Text>
+								<br />
+								<Text>{time_spent}</Text>
+							</AccordionPanel>
+						</AccordionItem>
 					</Accordion>
 				</Box>
 			)}
